@@ -29,19 +29,31 @@ function guardarTasa() {
 }
 
 function guardarCliente() {
+
+
   let valorCedula = recuperaraTexto("txtCedula");
   let valorNombre = recuperaraTexto("txtNombre");
   let valorApellido = recuperaraTexto("txtApellido");
   let valorIngresos = recuperarInt("txtIngreses");
   let valoregresos = recuperarInt("txtEgresos");
-  let nuevoCliente = {};
-  nuevoCliente.cedula = valorCedula;
-  nuevoCliente.nombre = valorNombre;
-  nuevoCliente.apellido = valorApellido;
-  nuevoCliente.ingresos = valorIngresos;
-  nuevoCliente.egresos = valoregresos;
-  clientes.push(nuevoCliente);
-  pintarClientes();
+  let existe = buscarCliente(valorCedula);
+  if (existe == null) {
+    let nuevoCliente = {};
+    nuevoCliente.cedula = valorCedula;
+    nuevoCliente.nombre = valorNombre;
+    nuevoCliente.apellido = valorApellido;
+    nuevoCliente.ingresos = valorIngresos;
+    nuevoCliente.egresos = valoregresos;
+    clientes.push(nuevoCliente);
+    pintarClientes();
+  } else {
+    existe.nombre = valorNombre;
+    existe.apellido = valorApellido;
+    existe.ingresos = valorIngresos;
+    existe.egresos = valoregresos;
+    pintarClientes();
+  }
+
 }
 
 function pintarClientes() {
@@ -55,11 +67,43 @@ function pintarClientes() {
       "<td>" + cliente.apellido + "</td>" +
       "<td>" + cliente.ingresos + "</td>" +
       "<td>" + cliente.egresos + "</td>" +
-      "<td><button>Actualizar</button><button>Eliminar</button></td>" +
+      "<td><button onclick=\"seleccionarCliente('" + cliente.cedula + "')\">Actualizar</button>" +
+      "<button>Eliminar</button></td>" +
       "</tr>"
   }
-  contenidoTabla+="</table>"
-  divTabla.innerHTML=contenidoTabla
+  contenidoTabla += "</table>"
+  divTabla.innerHTML = contenidoTabla
 }
 
+function buscarCliente(cedula) {
+  let cliente;
+  let clienteEncontrado = null;
+  for (let i = 0; i < clientes.length; i++) {
+    cliente = clientes[i];
+    if (cliente.cedula == cedula) {
+      clienteEncontrado = cliente
+      break
+    }
+  }
+  return clienteEncontrado
+}
+function seleccionarCliente(cedula) {
+  let clienteSeleccionado = buscarCliente(cedula);
+  if (clienteSeleccionado != null) {
+    mostrarTextoEnCaja("txtCedula", clienteSeleccionado.cedula);
+    mostrarTextoEnCaja("txtNombre", clienteSeleccionado.nombre);
+    mostrarTextoEnCaja("txtApellido", clienteSeleccionado.apellido);
+    mostrarTextoEnCaja("txtIngreses", clienteSeleccionado.ingresos);
+    mostrarTextoEnCaja("txtEgresos", clienteSeleccionado.egresos);
+  } else {
+    alert("Cliente no encontrado")
+  }
+}
+function limpiar() {
+  mostrarTextoEnCaja("txtCedula", "");
+  mostrarTextoEnCaja("txtNombre", "");
+  mostrarTextoEnCaja("txtApellido", "");
+  mostrarTextoEnCaja("txtIngreses", "");
+  mostrarTextoEnCaja("txtEgresos", "");
+}
 //Para recuperar o mostrar información usar los métodos de la clase utilitarios, puede agregar métodos adicionales en utilitarios
