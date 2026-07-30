@@ -13,6 +13,7 @@ function ocultarSeccciones() {
   document.getElementById("parametros").classList.remove("activa");
   document.getElementById("clientes").classList.remove("activa");
   document.getElementById("creditos").classList.remove("activa");
+  document.getElementById("listaCreditos").classList.remove("activa");
 }
 
 function mostrarSeccion(id) {
@@ -156,7 +157,7 @@ function calcularCredito() {
   let monto = recuperarInt("montoCredito");
   let plazo = recuperarInt("plazoCredito");
   let valorCedula = recuperaraTexto("buscarCedulaCredito");
-  let resultadoCredito=document.getElementById("resultadoCredito");
+  let resultadoCredito = document.getElementById("resultadoCredito");
   clienteSeleccionado = buscarCliente(valorCedula);
 
   montoCalculado = calcularDisponible(clienteSeleccionado.ingresos, clienteSeleccionado.egresos);
@@ -164,23 +165,85 @@ function calcularCredito() {
   let totalPagar = calcualrTotalPagar(monto, tasaInteres);
   cuotaCalculada = calcularCuotaMensual(totalPagar, plazo);
   creditoAprobado = aprobarCredito(capacidad, cuotaCalculada);
-  if(creditoAprobado==true){
-    resultadoCredito.innerHTML="Capacidad de pago:"+capacidad+"<br>"+
-  "Capacidad de pago: "+capacidad+"<br>"+
-  "Total a pagar: "+totalPagar+"<br>"+
-  "Cuota mensual: "+cuotaCalculada+"<br>"+
-  "Resultado: Aceptado";
-  resultadoCredito.className = "aprobado";
-  }else{
-    resultadoCredito.innerHTML="Capacidad de pago:"+capacidad+"<br>"+
-  "Capacidad de pago:"+capacidad+"<br>"+
-  "Total a pagar:"+totalPagar+"<br>"+
-  "Cuota mensual:"+cuotaCalculada+"<br>"+
-  "Resultado: Rechazado";
-  resultadoCredito.className = "rechazado";
+  if (creditoAprobado == true) {
+    resultadoCredito.innerHTML = "Capacidad de pago:" + capacidad + "<br>" +
+      "Capacidad de pago: " + capacidad + "<br>" +
+      "Total a pagar: " + totalPagar + "<br>" +
+      "Cuota mensual: " + cuotaCalculada + "<br>" +
+      "Resultado: Aceptado";
+    resultadoCredito.className = "aprobado";
+    document.getElementById("btnAsignarCredito").disabled = false;
+  } else {
+    resultadoCredito.innerHTML = "Capacidad de pago:" + capacidad + "<br>" +
+      "Capacidad de pago:" + capacidad + "<br>" +
+      "Total a pagar:" + totalPagar + "<br>" +
+      "Cuota mensual:" + cuotaCalculada + "<br>" +
+      "Resultado: Rechazado";
+    resultadoCredito.className = "rechazado";
+    document.getElementById("btnAsignarCredito").disabled = false;
   }
+}
 
-  
+function asignarCredito() {
+  let credito = {
+    cedula: clienteSeleccionado.cedula,
+    nombre: clienteSeleccionado.nombre,
+    apellido: clienteSeleccionado.apellido,
+    monto: recuperarInt("montoCredito"),
+    tasa: tasaInteres,
+    plazo: recuperarInt("plazoCredito"),
+    cuota: cuotaCalculada
+  };
+
+  creditos.push(credito);
+  alert("Crédito registrado correctamente");
+}
+
+function buscarCreditos(cedula) {
+
+    let lista = [];
+    for (let i = 0; i < creditos.length; i++) {
+
+        if (creditos[i].cedula == cedula) {
+            lista.push(creditos[i]);
+        }
+
+    }
+
+    return lista;
+}
+
+function pintarCreditos(listaCreditos) {
+
+    let contenido = "";
+
+    for (let i = 0; i < listaCreditos.length; i++) {
+
+        let credito = listaCreditos[i];
+
+        contenido +=
+            "<tr>" +
+            "<td>" + credito.cedula + "</td>" +
+            "<td>" + credito.nombre + "</td>" +
+            "<td>" + credito.apellido + "</td>" +
+            "<td>" + credito.monto + "</td>" +
+            "<td>" + credito.tasa + "</td>" +
+            "<td>" + credito.plazo + "</td>" +
+            "<td>" + credito.cuota + "</td>" +
+            "</tr>";
+    }
+
+    document.getElementById("tablaCreditos").innerHTML = contenido;
+}
+
+function buscarCreditosCliente() {
+
+    let cedula = recuperaraTexto("buscarCedulaListado");
+
+    let lista = buscarCreditos(cedula);
+
+    pintarCreditos(lista);
+
 }
 
 //Para recuperar o mostrar información usar los métodos de la clase utilitarios, puede agregar métodos adicionales en utilitarios
